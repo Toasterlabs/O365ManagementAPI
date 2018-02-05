@@ -21,6 +21,9 @@ Pulls all messages down from the Service Health Dashboard and stores them in XML
 *Param*: ConfigFile, Outputpath
 Pulls the current status of the service and stores it in a CSV file. This will append any existing CSV that exists!
 
+### get-Services
+*Param*: ConfigFile, Outputpath
+Pulls the currently enabled services from O365 in to a CSV file. This will append any existing CSV that exists!
 
 ##  Configuration
 You'll need to set up an app in the Azure management portal: https://msdn.microsoft.com/en-us/office-365/get-started-with-office-365-management-apis?f=255&MSPPError=-2147217396#application-registration-in-azure-ad
