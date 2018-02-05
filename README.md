@@ -1,9 +1,12 @@
 # O365ManagementAPI
 
-Collection of PowerShell code to retrieve information from Office 365 using the O365 management API...
+## Description
+Collection of PowerShell code to retrieve information from Office 365 using the O365 management API... If you decide to reuse this code in your own projects, give me a shout-out!
 
-To use, you'll need to setup an app in O365 andconfigure the configuration file:
+##  Configuration
+You'll need to set up an app in the Azure management portal: https://msdn.microsoft.com/en-us/office-365/get-started-with-office-365-management-apis?f=255&MSPPError=-2147217396#application-registration-in-azure-ad
 
+```
 {
     "Description": "Global configuration file for O365 Investigations",
     "AppID": "<App ID goes here>",
@@ -13,3 +16,10 @@ To use, you'll need to setup an app in O365 andconfigure the configuration file:
     "LoginURL" : "https://login.windows.net",
     "ResourceAPI" : "https://manage.office.com"
 }
+```
+
+## Disclaimer
+Use this code at your own risk, verify anything you run in production. If you decide to run this code all risk stays with you. 
+
+### Legalese:
+> The sample scripts are provided AS IS without warranty of any kind. Microsoft disclaims all implied warranties including, without limitation, any implied warranties of merchantability or of fitness for a particular purpose. The entire risk arising out of the use or performance of the sample scripts and documentation remains with you. In no event shall Microsoft, its authors, or anyone else involved in the creation, production, or delivery of the scripts be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the sample scripts or documentation, even if Microsoft has been advised of the possibility of such damages.
