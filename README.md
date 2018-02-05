@@ -6,19 +6,19 @@ Collection of PowerShell code to retrieve information from Office 365 using the 
 Currently has the following functions:
 
 ### get-globalconfig
-Param: ConfigFile
+*Param*: ConfigFile
 Imports configuration from json
 
 ### Get-oauthtoken
-Param: Resource, ClientID, ClientSecret, LoginURL, TenantDomain
+*Param*: Resource, ClientID, ClientSecret, LoginURL, TenantDomain
 Constructs header for use with other functions
 
 ### get-SCVMessages
-Param: ConfigFile, OutputPath
+*Param*: ConfigFile, OutputPath
 Pulls all messages down from the Service Health Dashboard and stores them in XML format by ID. Overwrites any existing XML file with the same name
 
 ### get-CurrentStatus
-Param: ConfigFile, Outputpath
+*Param*: ConfigFile, Outputpath
 Pulls the current status of the service and stores it in a CSV file. This will append any existing CSV that exists!
 
 
