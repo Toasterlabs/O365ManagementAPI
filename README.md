@@ -13,7 +13,7 @@ Imports configuration from json
 *Param*: Resource, ClientID, ClientSecret, LoginURL, TenantDomain
 Constructs header for use with other functions
 
-### get-SCVMessages
+### get-SVcMessages
 *Param*: ConfigFile, OutputPath
 Pulls all messages down from the Service Health Dashboard and stores them in XML format by ID. Overwrites any existing XML file with the same name
 
