@@ -30,7 +30,7 @@ You'll need to set up an app in the Azure management portal: https://msdn.micros
 
 ```
 {
-    "Description": "Global configuration file for O365 Investigations",
+    "Description": "Global configuration file for O365",
     "AppID": "<App ID goes here>",
     "AppSecret": "<App key goes here>",
     "TenantDomain": "<your tenant domain (contoso.onmicrosoft.com or contoso.com)>",
