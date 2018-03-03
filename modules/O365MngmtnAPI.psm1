@@ -75,7 +75,7 @@ function get-SVCMessages{
     
     # SharePoint Online List stuff
     if(!([STRING]::IsnullorEmpty($SPOList))){
-            
+                   
             if([STRING]::IsnullorEmpty($SPOURL)){
                 write-error -Message "SharePoint Online URL not specified! Exiting" -Category ConnectionError -RecommendedAction "Rerun function and specify the 'SPOURL' parameter"
             }
@@ -99,6 +99,10 @@ function get-SVCMessages{
                 Add-PnPField -list $SPOList -type Text -DisplayName "Message Affected Users" -InternalName "SHDAffectedUsers"
                 Add-PnPField -List $SPOList -Type Note -DisplayName "Message Description" -InternalName "SHDDescription"
             }
+
+            # Retrieving items that already exist
+            $Listitems = get-pnplistitem -List $SPOList
+
     }
 
     # Now itterate through all if this and write it to an XML file in our chosen output path!
@@ -147,9 +151,17 @@ function get-SVCMessages{
             $SHDAffectedUsers = $Message.AffectedUserCount
             $SHDDescription = $CSVObject.Message
 
-            # writing list item
-            Add-PnPListItem -List $SPOList -Values @{"SHDTitle"="$Title";"SHDID" = "$SHDID";"SHDClassification" = "$SHDClassification";"SHDUpdated" = "$SHDUpdated";"SHDWorkload" = "$SHDWorkload";"SHDFeature" = "$SHDFeature";"SHDAffectedTenants" = "$SHDAffectedTenants";"SHDAffectedUsers" = "$SHDAffectedUsers";"SHDDescription" = "$SHDDescription"}
+            # See if the item already exists
+            [STRING]$ExistentialCheck = $listitems.fieldvalues.Title | Select-String "$SHDID"
 
+            if([STRING]::IsNullOrEmpty($ExistentialCheck)){
+                
+                Write-Verbose -Message "Adding Item: $SHDID"
+                # writing list item
+                Add-PnPListItem -List $SPOList -Values @{"Title" = "$SHDID";"SHDTitle"="$Title";"SHDClassification" = "$SHDClassification";"SHDUpdated" = "$SHDUpdated";"SHDWorkload" = "$SHDWorkload";"SHDFeature" = "$SHDFeature";"SHDAffectedTenants" = "$SHDAffectedTenants";"SHDAffectedUsers" = "$SHDAffectedUsers";"SHDDescription" = "$SHDDescription"}
+            } Else {
+                Write-Verbose -Message "Item already exists in List: $SHDID"
+            }
         }
     }
 
