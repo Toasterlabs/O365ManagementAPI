@@ -1,6 +1,6 @@
 {
     "Description": "Global configuration file for O365",
-    "nAppID": "",
+    "AppID": "",
     "AppSecret": "",
     "TenantDomain": "",
     "TenantGUID": "",
