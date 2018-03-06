@@ -1,9 +1,9 @@
 {
     "Description": "Global configuration file for O365",
-    "InvestigationAppID": "",
-    "InvestigationAppSecret": "",
-    "InvestigationTenantDomain": "",
-    "InvestigationTenantGUID": "",
+    "nAppID": "",
+    "AppSecret": "",
+    "TenantDomain": "",
+    "TenantGUID": "",
     "LoginURL" : "https://login.windows.net",
     "ResourceAPI" : "https://manage.office.com"
 }
