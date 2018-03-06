@@ -43,8 +43,14 @@ function get-SVCMessages{
     Param(
         [parameter(Mandatory=$true)]
         $ConfigFile,
-        [parameter(Mandatory=$true)]
-        $OutputPath
+        [parameter(Mandatory=$false)]
+        $OutputPath,
+        [parameter(Mandatory=$false)]
+        $SPOURL,
+        [parameter(Mandatory=$false)]
+        $SPOList,
+        [parameter(Mandatory=$false)]
+        $SPOCreds
     )
 
     # Retrieving settings
@@ -67,6 +73,38 @@ function get-SVCMessages{
     # Getting the content from the raw response, converting that from JSON, and taking only the value (cause that's all we're interested in!)
     $messages = ($Messages.content | ConvertFrom-Json).value
     
+    # SharePoint Online List stuff
+    if(!([STRING]::IsnullorEmpty($SPOList))){
+                   
+            if([STRING]::IsnullorEmpty($SPOURL)){
+                write-error -Message "SharePoint Online URL not specified! Exiting" -Category ConnectionError -RecommendedAction "Rerun function and specify the 'SPOURL' parameter"
+            }
+
+            # Connecting to SPO
+            connect-pnponline -url $SPOURL -Credentials $SPOCreds
+            
+            # seeing if list exists
+            $Listcheck = Get-PnPList -Identity $SPOList -ErrorAction SilentlyContinue
+
+            # If the list doesn't exist, create it
+            if([STRING]::IsNullOrEmpty($Listcheck)){
+                New-PnPList -Title "$SPOList" -Template GenericList -OnQuickLaunch
+                Add-PnPField -list $SPOList -type Text -DisplayName "Message Title" -InternalName "SHDTitle"
+                Add-PnPField -list $SPOList -type Text -DisplayName "Message ID" -InternalName "SHDID"
+                Add-PnPField -list $SPOList -type Text -DisplayName "Message Classification" -InternalName "SHDClassification"
+                Add-PnPField -list $SPOList -type Text -DisplayName "Message Last update" -InternalName "SHDUpdated"
+                Add-PnPField -list $SPOList -type Text -DisplayName "Message Workload" -InternalName "SHDWorkload"
+                Add-PnPField -list $SPOList -type Text -DisplayName "Message Feature" -InternalName "SHDFeature"
+                Add-PnPField -list $SPOList -type Text -DisplayName "Message Affected Tenants" -InternalName "SHDAffectedTenants"
+                Add-PnPField -list $SPOList -type Text -DisplayName "Message Affected Users" -InternalName "SHDAffectedUsers"
+                Add-PnPField -List $SPOList -Type Note -DisplayName "Message Description" -InternalName "SHDDescription"
+            }
+
+            # Retrieving items that already exist
+            $Listitems = get-pnplistitem -List $SPOList
+
+    }
+
     # Now itterate through all if this and write it to an XML file in our chosen output path!
     foreach ($message in $Messages){
         
@@ -94,10 +132,37 @@ function get-SVCMessages{
             $CSVObject.Message += $i.messagetext
         }
         
+        if(!([STRING]::IsnullorEmpty($OutputPath))){
+            #Setting up filename
+            $Filename = $OutputPath + "\" + ($Message.ID) + ".xml"
+            $CSVObject | Export-Clixml $Filename
+        }
 
-        #Setting up filename
-        $Filename = $OutputPath + "\" + ($Message.ID) + ".xml"
-        $CSVObject | Export-Clixml $Filename
+        if(!([STRING]::IsnullorEmpty($SPOList))){
+            
+            # Transforming properties to variables since add-pnplistitem doesn't like it that way...
+            $Title = $Message.Title
+            $SHDID = $Message.ID
+            $SHDClassification = $Message.Classification
+            $SHDUpdated = $Message.LastUpdatedTime
+            $SHDWorkload = $Message.WorkloadDisplayName
+            $SHDFeature = $Message.Feature
+            $SHDAffectedTenants = $Message.AffectedTenantCount
+            $SHDAffectedUsers = $Message.AffectedUserCount
+            $SHDDescription = $CSVObject.Message
+
+            # See if the item already exists
+            [STRING]$ExistentialCheck = $listitems.fieldvalues.Title | Select-String "$SHDID"
+
+            if([STRING]::IsNullOrEmpty($ExistentialCheck)){
+                
+                Write-Verbose -Message "Adding Item: $SHDID"
+                # writing list item
+                Add-PnPListItem -List $SPOList -Values @{"Title" = "$SHDID";"SHDTitle"="$Title";"SHDClassification" = "$SHDClassification";"SHDUpdated" = "$SHDUpdated";"SHDWorkload" = "$SHDWorkload";"SHDFeature" = "$SHDFeature";"SHDAffectedTenants" = "$SHDAffectedTenants";"SHDAffectedUsers" = "$SHDAffectedUsers";"SHDDescription" = "$SHDDescription"}
+            } Else {
+                Write-Verbose -Message "Item already exists in List: $SHDID"
+            }
+        }
     }
 
 } # AAAAAND we're done!
